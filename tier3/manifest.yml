@@ -1,12 +1,12 @@
-image: vnoj/runtimes-tier3:latest
+image: hnoj/runtimes-tier3:latest
 manifests:
   -
-    image: vnoj/runtimes-tier3:amd64-latest
+    image: hnoj/runtimes-tier3:amd64-latest
     platform:
       architecture: amd64
       os: linux
   -
-    image: vnoj/runtimes-tier3:aarch64-latest
+    image: hnoj/runtimes-tier3:aarch64-latest
     platform:
       architecture: arm64
       os: linux

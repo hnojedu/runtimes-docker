@@ -1,0 +1,12 @@
+image: hnoj/runtimes-tiervnoj:latest
+manifests:
+  -
+    image: hnoj/runtimes-tiervnoj:amd64-latest
+    platform:
+      architecture: amd64
+      os: linux
+  -
+    image: hnoj/runtimes-tiervnoj:aarch64-latest
+    platform:
+      architecture: arm64
+      os: linux

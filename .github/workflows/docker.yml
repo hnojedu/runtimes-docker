@@ -2,49 +2,71 @@ name: Build Docker Images
 on:
   push:
   pull_request:
-  schedule:
-    - cron: '0 0 * * 1'
+  release:
+    types: [published]
+
 jobs:
-  amd64:
-    runs-on: ubuntu-latest
+  test:
+    name: Build and test Docker images
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            arch: amd64
+          - os: ubuntu-24.04-arm
+            arch: aarch64
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Build tier icpc Docker image
-        run: make TAG=amd64-latest image-tiericpc
+        run: make TAG=${{ matrix.arch }}-latest image-tiericpc
       - name: Test tier icpc Docker image
-        run: make TAG=amd64-latest test-tiericpc
+        run: make TAG=${{ matrix.arch }}-latest test-tiericpc
       - name: Build tier 1 Docker image
-        run: make TAG=amd64-latest image-tier1
+        run: make TAG=${{ matrix.arch }}-latest image-tier1
       - name: Test tier 1 Docker image
-        run: make TAG=amd64-latest test-tier1
+        run: make TAG=${{ matrix.arch }}-latest test-tier1
       - name: Build tier 2 Docker image
-        run: make TAG=amd64-latest image-tier2
+        run: make TAG=${{ matrix.arch }}-latest image-tier2
       - name: Test tier 2 Docker image
-        run: make TAG=amd64-latest test-tier2
+        run: make TAG=${{ matrix.arch }}-latest test-tier2
       - name: Build tier 3 Docker image
-        run: make TAG=amd64-latest image-tier3
+        run: make TAG=${{ matrix.arch }}-latest image-tier3
       - name: Test tier 3 Docker image
-        run: make TAG=amd64-latest test-tier3
-      - name: Push images to Docker
+        run: make TAG=${{ matrix.arch }}-latest test-tier3
+      - name: Build tier vnoj Docker image
+        run: make TAG=${{ matrix.arch }}-latest image-tiervnoj
+      - name: Test tier vnoj Docker image
+        run: make TAG=${{ matrix.arch }}-latest test-tiervnoj
+      - name: Push images to Docker Hub
         if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
         run: |
           echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-          docker push vnoj/runtimes-tier1:amd64-latest
-          docker push vnoj/runtimes-tier2:amd64-latest
-          docker push vnoj/runtimes-tier3:amd64-latest
-          docker push vnoj/runtimes-tiericpc:amd64-latest
+          docker push hnoj/runtimes-tiervnoj:${{ matrix.arch }}-latest
+          docker push hnoj/runtimes-tier1:${{ matrix.arch }}-latest
+          docker push hnoj/runtimes-tier2:${{ matrix.arch }}-latest
+          docker push hnoj/runtimes-tier3:${{ matrix.arch }}-latest
+          docker push hnoj/runtimes-tiericpc:${{ matrix.arch }}-latest
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  deploy:
+    if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+    name: Deploy multiarch images
+    needs: test
+    strategy:
+      matrix:
+        tier: [tiericpc,tier1,tier2,tier3,tiervnoj]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Push images to Docker Hub
+        run: |
           docker run -v "$(pwd)":/code mplatform/manifest-tool \
             --username="$DOCKER_USERNAME" --password="$DOCKER_PASSWORD" \
-            push from-spec /code/tiericpc/manifest.yml
-          docker run -v "$(pwd)":/code mplatform/manifest-tool \
-            --username="$DOCKER_USERNAME" --password="$DOCKER_PASSWORD" \
-            push from-spec /code/tier1/manifest.yml
-          docker run -v "$(pwd)":/code mplatform/manifest-tool \
-            --username="$DOCKER_USERNAME" --password="$DOCKER_PASSWORD" \
-            push from-spec /code/tier2/manifest.yml
-          docker run -v "$(pwd)":/code mplatform/manifest-tool \
-            --username="$DOCKER_USERNAME" --password="$DOCKER_PASSWORD" \
-            push from-spec /code/tier3/manifest.yml
+            push from-spec /code/${{ matrix.tier }}/manifest.yml
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
