@@ -30,10 +30,10 @@ jobs:
         run: make TAG=${{ matrix.arch }}-latest image-tier2
       - name: Test tier 2 Docker image
         run: make TAG=${{ matrix.arch }}-latest test-tier2
-      - name: Build tier 3 Docker image
-        run: make TAG=${{ matrix.arch }}-latest image-tier3
-      - name: Test tier 3 Docker image
-        run: make TAG=${{ matrix.arch }}-latest test-tier3
+      # - name: Build tier 3 Docker image
+      #   run: make TAG=${{ matrix.arch }}-latest image-tier3
+      # - name: Test tier 3 Docker image
+      #   run: make TAG=${{ matrix.arch }}-latest test-tier3
       - name: Build tier vnoj Docker image
         run: make TAG=${{ matrix.arch }}-latest image-tiervnoj
       - name: Test tier vnoj Docker image
@@ -45,8 +45,8 @@ jobs:
           docker push hnoj/runtimes-tiervnoj:${{ matrix.arch }}-latest
           docker push hnoj/runtimes-tier1:${{ matrix.arch }}-latest
           docker push hnoj/runtimes-tier2:${{ matrix.arch }}-latest
-          docker push hnoj/runtimes-tier3:${{ matrix.arch }}-latest
-          docker push hnoj/runtimes-tiericpc:${{ matrix.arch }}-latest
+      #    docker push hnoj/runtimes-tier3:${{ matrix.arch }}-latest
+      #    docker push hnoj/runtimes-tiericpc:${{ matrix.arch }}-latest
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -57,7 +57,7 @@ jobs:
     needs: test
     strategy:
       matrix:
-        tier: [tier1,tier2,tier3,tiervnoj]
+        tier: [tier1,tier2,tiervnoj]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
