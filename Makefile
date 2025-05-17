@@ -31,7 +31,7 @@ test-tier2:
 	docker run --rm -v "`pwd`/test":/code --cap-add=SYS_PTRACE hnoj/runtimes-tier2
 
 test-tier3:
-	docker run --rm -v "`pwd`/test":/code --cap-add=SYS_PTRACE hnoj/runtimes-tier3
+	docker run --rm -v "`pwd`/test-tier3":/code --cap-add=SYS_PTRACE hnoj/runtimes-tier3
 
 test-tiervnoj:
-	docker run --rm -v "`pwd`/test-tier3":/code --cap-add=SYS_PTRACE hnoj/runtimes-tiervnoj
+	docker run --rm -v "`pwd`/test":/code --cap-add=SYS_PTRACE hnoj/runtimes-tiervnoj

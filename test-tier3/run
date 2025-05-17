@@ -6,7 +6,7 @@ mv scratch-run /usr/bin/scratch-run
 
 mkdir /judge
 cd /judge || exit
-curl -L https://github.com/VNOI-Admin/judge-server/archive/master.tar.gz | tar -xz --strip-components=1
+curl -L https://github.com/hnojedu/judge-server/archive/master.tar.gz | tar -xz --strip-components=1
 
 mkdir -p /usr/lib/fpc/
 cp asset/Windows.pas /usr/lib/fpc/
