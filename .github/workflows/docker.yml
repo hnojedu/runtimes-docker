@@ -18,10 +18,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Build tier icpc Docker image
-        run: make TAG=${{ matrix.arch }}-latest image-tiericpc
-      - name: Test tier icpc Docker image
-        run: make TAG=${{ matrix.arch }}-latest test-tiericpc
+      # - name: Build tier icpc Docker image
+      #   run: make TAG=${{ matrix.arch }}-latest image-tiericpc
+      # - name: Test tier icpc Docker image
+      #   run: make TAG=${{ matrix.arch }}-latest test-tiericpc
       - name: Build tier 1 Docker image
         run: make TAG=${{ matrix.arch }}-latest image-tier1
       - name: Test tier 1 Docker image
@@ -57,7 +57,7 @@ jobs:
     needs: test
     strategy:
       matrix:
-        tier: [tiericpc,tier1,tier2,tier3,tiervnoj]
+        tier: [tier1,tier2,tier3,tiervnoj]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
